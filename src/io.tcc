@@ -39,7 +39,6 @@ bStream::bStream(char const* name) {
  */
 void bStream::open(char const* name) {
   _handle = fopen(name, "ab+");
-  setbuf(_handle, NULL);
 }
 
 /*!

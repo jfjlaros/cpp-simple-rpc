@@ -10,10 +10,10 @@ uint32_t (*milli_time)(void);
 //Vector<float> (*c_vector)(Vector<int>);
 //int (*add)(int, int);
 
-void* methods[] = {
-  (void*)ping,
-  (void*)inc,
-  (void*)set_led,
-  (void*)milli_time};
+void* _rpcMethod[] = {
+  &ping,
+  &inc,
+  &set_led,
+  &milli_time};
 
 #endif
