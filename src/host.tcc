@@ -9,6 +9,7 @@ inline void _call(bStream&, void (*)(void)) {}
 /*!
  * Write parameter values.
  *
+ * \param io Binary blocking input / output stream.
  * \param f_ Dummy function pointer.
  * \param h Value to write.
  * \param args Remaining values.
@@ -24,6 +25,7 @@ void _call(
 /*! \ingroup call
  * RPC call.
  *
+ * \param io Binary blocking input / output stream.
  * \param f Function pointer.
  * \param args Parameter values.
  *
@@ -38,6 +40,7 @@ R call(bStream& io, R (*f)(Args...), FArgs const&... args) {
 /*! \ingroup call
  * RPC call.
  *
+ * \param io Binary blocking input / output stream.
  * \param f Function pointer.
  * \param args Parameter values.
  */

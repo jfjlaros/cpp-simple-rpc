@@ -1,5 +1,4 @@
 #include <chrono>
-#include <ios>
 #include <thread>
 #include <iostream>  // Debug code.
 
@@ -17,19 +16,22 @@ int main(void) {
   bStream handle("/dev/ttyACM0");
   sleep_for(seconds(2));
 
+  // Immediate values.
   handle.write('\x01');
   cout << call(handle, inc, (int16_t)2) << '\n';
   handle.write('\x01');
   cout << call(handle, inc, (int16_t)4) << '\n';
   handle.write('\x01');
   cout << call(handle, inc, (int16_t)8) << '\n';
-  /*
-  printf("%i\n", call(add, 2, 3));
-  call(set_led, 10);
 
-  int a = 1;
-  printf("%i\n", call(inc, a));
-  */
+  // Variables.
+  handle.write('\x01');
+  int16_t a = 1;
+  cout << call(handle, inc, a) << '\n';
+
+  // Void function.
+  handle.write('\x02');
+  call(handle, set_led, (uint8_t)63);
 
   return 0;
 }
