@@ -17,16 +17,16 @@ int main(void) {
   sleep_for(seconds(2));
 
   // Immediate values.
-  cout << call(handle, inc, (int16_t)2) << '\n';
-  cout << call(handle, inc, (int16_t)4) << '\n';
-  cout << call(handle, inc, (int16_t)8) << '\n';
+  cout << call(handle, inc, 2) << '\n';
+  cout << call(handle, inc, 4) << '\n';
+  cout << call(handle, inc, 8) << '\n';
 
   // Variables.
   int16_t a = 1;
   cout << call(handle, inc, a) << '\n';
 
   // Void function.
-  call(handle, set_led, (uint8_t)63);
+  call(handle, set_led, 63);
 
   return 0;
 }
