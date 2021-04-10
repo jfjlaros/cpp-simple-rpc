@@ -3,6 +3,11 @@
 
 #include <cstdio>
 
+//! \defgroup io
+
+/*! \ingroup io
+ * Binary blocking input / output stream.
+ */
 class bStream {
   public:
     bStream(void) {}
@@ -18,19 +23,39 @@ class bStream {
 };
 
 
+/*!
+ * Create a binary blocking input / output stream.
+ *
+ * \param name File name.
+ */
 bStream::bStream(char const* name) {
   open(name);
 }
 
+/*!
+ * Open a binary blocking input / output stream.
+ *
+ * \param name File name.
+ */
 void bStream::open(char const* name) {
   _handle = fopen(name, "ab+");
   setbuf(_handle, NULL);
 }
 
+/*!
+ * Close a binary blocking input / output stream.
+ *
+ * \param name File name.
+ */
 void bStream::close(void) {
   fclose(_handle);
 }
 
+/*!
+ * Read from a binary blocking input / output stream.
+ *
+ * \return Data.
+ */
 template <class R>
 R bStream::read(void) {
   R data;
@@ -39,6 +64,11 @@ R bStream::read(void) {
   return data;
 }
 
+/*!
+ * Write to a binary blocking input / output stream.
+ *
+ * \param data Data.
+ */
 template <class T>
 void bStream::write(T const data) {
   fwrite((void*)&data, sizeof(T), 1, _handle);
