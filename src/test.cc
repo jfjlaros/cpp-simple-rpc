@@ -2,7 +2,7 @@
 #include <thread>
 #include <iostream>  // Debug code.
 
-#include "host.tcc"
+#include "rpcCall.tcc"
 
 #include "device.h"
 

@@ -1,3 +1,6 @@
+#ifndef CPP_SIMPLE_RPC_DEVICE_H_
+#define CPP_SIMPLE_RPC_DEVICE_H_
+
 uint8_t (*ping)(uint8_t);
 int16_t (*inc)(int16_t);
 void (*set_led)(uint8_t);
@@ -6,3 +9,11 @@ uint32_t (*milli_time)(void);
 //Vector<float> (*vector)(Vector<int>);
 //Vector<float> (*c_vector)(Vector<int>);
 //int (*add)(int, int);
+
+void* methods[] = {
+  (void*)ping,
+  (void*)inc,
+  (void*)set_led,
+  (void*)milli_time};
+
+#endif

@@ -1,5 +1,5 @@
-#ifndef CPP_SIMPLE_RPC_IO_TCC
-#define CPP_SIMPLE_RPC_IO_TCC
+#ifndef CPP_SIMPLE_RPC_IO_TCC_
+#define CPP_SIMPLE_RPC_IO_TCC_
 
 #include <cstdio>
 

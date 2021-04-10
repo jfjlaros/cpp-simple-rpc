@@ -1,3 +1,6 @@
+#ifndef CPP_SIMPLE_RPC_RPCCALL_TCC_
+#define CPP_SIMPLE_RPC_RPCCALL_TCC_
+
 #include "io.tcc"
 
 //! \defgroup call
@@ -48,3 +51,5 @@ template <class... Args, class... FArgs>
 void call(bStream& io, void (*f)(Args...), FArgs const&... args) {
   _call(io, (void (*)(Args...))f, args...);
 }
+
+#endif
