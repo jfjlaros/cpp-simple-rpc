@@ -1,43 +1,16 @@
-#include <cstring>
 #include <iostream>
-#include <thread>
 
-#include <fcntl.h>
-#include <termios.h>
-
-#include "rpcCall.tcc"
+#include "serial.h"
+#include "simpleRPC.h"
 
 #include "device.h"
 
-using std::chrono::seconds;
-using std::this_thread::sleep_for;
 using std::cout;
 
 
 int main(void) {
-  int fd = open("/dev/ttyACM0", O_RDWR| O_NOCTTY);
+  int fd = serialOpen("/dev/ttyACM0", 9600, 2);
 
-  termios tty;
-  if (tcgetattr(fd, &tty)) {
-     cout << "Error: " << strerror(errno) << '\n';
-  }
-
-  cfsetospeed(&tty, (speed_t)B9600);
-  cfsetispeed(&tty, (speed_t)B9600);
-
-  tty.c_cflag = CLOCAL | CREAD | CRTSCTS | CS8 | CSIZE | CSTOPB | PARENB;
-  tty.c_cc[VMIN] = 1;
-  tty.c_cc[VTIME] = 0;
-
-  cfmakeraw(&tty);
-
-  if (tcsetattr(fd, TCSANOW, &tty)) {
-     cout << "Error: " << strerror(errno) << '\n';
-  }
-
-  sleep_for(seconds(2));
-
-  // Demo begins here.
   for (int i = 0; i < 10; i++) {
     // Immediate values.
     cout << call(fd, inc, (int16_t)2) << ' ';

@@ -1,6 +1,8 @@
 #ifndef CPP_SIMPLE_RPC_RPCCALL_TCC_
 #define CPP_SIMPLE_RPC_RPCCALL_TCC_
 
+#include <stdint.h>
+
 #include "io.tcc"
 
 extern void* _rpcMethod[];
@@ -39,10 +41,24 @@ inline void _call(int, void (*)(void)) {}
  */
 template <class H, class... Tail>
 void _call(int fd, void (*f_)(H, Tail...), H const& v, Tail const&... args) {
-  ioWrite(fd, v);
+  ioWrite(fd, &v);
   _call(fd, (void (*)(Tail...))f_, args...);
 }
 
+
+/*! \ingroup call
+ * RPC call.
+ *
+ * \param fd File descriptor.
+ * \param f Function pointer.
+ * \param args Parameter values.
+ */
+template <class... FArgs, class... Args>
+void call(int fd, void (*&f)(FArgs...), Args const&... args) {
+  uint8_t index = _methodIndex(f);
+  ioWrite(fd, &index);
+  _call(fd, (void (*)(FArgs...))f, args...);
+}
 
 /*! \ingroup call
  * RPC call.
@@ -55,22 +71,11 @@ void _call(int fd, void (*f_)(H, Tail...), H const& v, Tail const&... args) {
  */
 template <class R, class... FArgs, class... Args>
 R call(int fd, R (*&f)(FArgs...), Args const&... args) {
-  ioWrite(fd, _methodIndex(f));
-  _call(fd, (void (*)(Args...))f, args...);
-  return ioRead<R>(fd);
-}
+  call(fd, (void (*&)(FArgs...))f, args...);
 
-/*! \ingroup call
- * RPC call.
- *
- * \param fd File descriptor.
- * \param f Function pointer.
- * \param args Parameter values.
- */
-template <class... FArgs, class... Args>
-void call(int fd, void (*&f)(FArgs...), Args const&... args) {
-  ioWrite(fd, _methodIndex(f));
-  _call(fd, (void (*)(Args...))f, args...);
+  R data;
+  ioRead(fd, &data);
+  return data;
 }
 
 #endif
