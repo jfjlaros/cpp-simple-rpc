@@ -4,13 +4,25 @@ MAIN := test
 CC := g++
 
 
+OBJS := serial.o
+
 .PHONY: all distclean
 
 
 all: $(MAIN)
 
-$(MAIN): $(MAIN).cc device.h
-	$(CC) -o $@ $<
-
 distclean:
 	rm -f $(MAIN)
+
+
+generate: generate.cc $(OBJS)
+	$(CC) -o $@ $< $(OBJS)
+
+$(MAIN): $(MAIN).cc $(OBJS)
+	$(CC) -o $@ $< $(OBJS)
+
+%.o: %.cc %.h
+	$(CC) -o $@ -c $<
+
+device.h: generate
+	./generate
