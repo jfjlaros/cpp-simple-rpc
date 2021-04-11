@@ -39,9 +39,9 @@ inline void _call(int, void (*)(void)) {}
  * \param v Value to write.
  * \param args Remaining values.
  */
-template <class H, class... Tail>
-void _call(int fd, void (*f_)(H, Tail...), H const& v, Tail const&... args) {
-  ioWrite(fd, &v);
+template <class H, class... Tail, class T, class... Args>
+void _call(int fd, void (*f_)(H, Tail...), T const& v, Args const&... args) {
+  ioWrite(fd, (H*)&v);
   _call(fd, (void (*)(Tail...))f_, args...);
 }
 
