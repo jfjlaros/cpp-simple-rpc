@@ -37,6 +37,7 @@ int main(void) {
 
   sleep_for(seconds(2));
 
+  // Demo begins here.
   for (int i = 0; i < 10; i++) {
     // Immediate values.
     cout << call(fd, inc, (int16_t)2) << ' ';
