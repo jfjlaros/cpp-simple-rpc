@@ -1,76 +1,39 @@
 #ifndef CPP_SIMPLE_RPC_IO_TCC_
 #define CPP_SIMPLE_RPC_IO_TCC_
 
-#include <cstdio>
+#include <unistd.h>
 
 //! \defgroup io
 
+
 /*! \ingroup io
- * Binary blocking input / output stream.
- */
-class bStream {
-  public:
-    bStream(void) {}
-    bStream(char const*);
-    void open(char const*);
-    void close(void);
-    template <class R>
-    R read(void);
-    template <class T>
-    void write(T);
-  private:
-    FILE* _handle;
-};
-
-
-/*!
- * Create a binary blocking input / output stream.
+ * Read from a file descriptor.
  *
- * \param name File name.
- */
-bStream::bStream(char const* name) {
-  open(name);
-}
-
-/*!
- * Open a binary blocking input / output stream.
- *
- * \param name File name.
- */
-void bStream::open(char const* name) {
-  _handle = fopen(name, "ab+");
-}
-
-/*!
- * Close a binary blocking input / output stream.
- *
- * \param name File name.
- */
-void bStream::close(void) {
-  fclose(_handle);
-}
-
-/*!
- * Read from a binary blocking input / output stream.
+ * \param fd File descriptor.
  *
  * \return Data.
  */
 template <class R>
-R bStream::read(void) {
+R ioRead(int fd) {
   R data;
 
-  fread((void*)&data, sizeof(R), 1, _handle);
+  for (uint8_t i = 0; i < sizeof(R); i++) {
+    read(fd, &((uint8_t*)&data)[i], 1);
+  }
   return data;
 }
 
-/*!
- * Write to a binary blocking input / output stream.
+/*! \ingroup io
+ * Write to a file descriptor.
  *
+ * \param fd File descriptor.
  * \param data Data.
  */
 template <class T>
-void bStream::write(T const data) {
-  fwrite((void*)&data, sizeof(T), 1, _handle);
+void ioWrite(int fd, T const data) {
+  for (uint8_t i = 0; i < sizeof(T); i++) {
+    write(fd, &((uint8_t*)&data)[i], 1);
+  }
 }
 
 #endif

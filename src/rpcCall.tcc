@@ -17,61 +17,60 @@ extern void* _rpcMethod[];
  */
 template <class F>
 uint8_t _methodIndex(F& f) {
-  for (uint8_t i = 0; i < sizeof(_rpcMethod) / sizeof(void*); i++) {
+  for (uint8_t i = 0x00; i < sizeof(_rpcMethod) / sizeof(void*); i++) {
     if (&f == _rpcMethod[i]) {
       return i;
     }
   }
-  return 255;
+  return 0xff;
 }
 
 
 //! Recursion terminator for `_call()`.
-inline void _call(bStream&, void (*)(void)) {}
+inline void _call(int, void (*)(void)) {}
 
 /*!
  * Write parameter values.
  *
- * \param io Binary blocking input / output stream.
+ * \param fd File descriptor.
  * \param f_ Dummy function pointer.
  * \param v Value to write.
  * \param args Remaining values.
  */
-template <class H, class... Tail, class T, class... Args>
-void _call(
-    bStream& io, void (*f_)(H, Tail...), T const& v, Args const&... args) {
-  io.write((H)v);
-  _call(io, (void (*)(Tail...))f_, args...);
+template <class H, class... Tail>
+void _call(int fd, void (*f_)(H, Tail...), H const& v, Tail const&... args) {
+  ioWrite(fd, v);
+  _call(fd, (void (*)(Tail...))f_, args...);
 }
 
 
 /*! \ingroup call
  * RPC call.
  *
- * \param io Binary blocking input / output stream.
+ * \param fd File descriptor.
  * \param f Function pointer.
  * \param args Parameter values.
  *
  * \return Result.
  */
 template <class R, class... FArgs, class... Args>
-R call(bStream& io, R (*&f)(FArgs...), Args const&... args) {
-  io.write(_methodIndex(f));
-  _call(io, (void (*)(Args...))f, args...);
-  return io.read<R>();
+R call(int fd, R (*&f)(FArgs...), Args const&... args) {
+  ioWrite(fd, _methodIndex(f));
+  _call(fd, (void (*)(Args...))f, args...);
+  return ioRead<R>(fd);
 }
 
 /*! \ingroup call
  * RPC call.
  *
- * \param io Binary blocking input / output stream.
+ * \param fd File descriptor.
  * \param f Function pointer.
  * \param args Parameter values.
  */
 template <class... FArgs, class... Args>
-void call(bStream& io, void (*&f)(FArgs...), Args const&... args) {
-  io.write(_methodIndex(f));
-  _call(io, (void (*)(Args...))f, args...);
+void call(int fd, void (*&f)(FArgs...), Args const&... args) {
+  ioWrite(fd, _methodIndex(f));
+  _call(fd, (void (*)(Args...))f, args...);
 }
 
 #endif

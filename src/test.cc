@@ -1,6 +1,9 @@
-#include <chrono>
+#include <cstring>
+#include <iostream>
 #include <thread>
-#include <iostream>  // Debug code.
+
+#include <fcntl.h>
+#include <termios.h>
 
 #include "rpcCall.tcc"
 
@@ -8,25 +11,47 @@
 
 using std::chrono::seconds;
 using std::this_thread::sleep_for;
-using std::cout;     // Debug code.
-using std::cin;      // Debug code.
+using std::cout;
 
 
 int main(void) {
-  bStream handle("/dev/ttyACM0");
+  int fd = open("/dev/ttyACM0", O_RDWR| O_NOCTTY);
+
+  termios tty;
+  if (tcgetattr(fd, &tty)) {
+     cout << "Error: " << strerror(errno) << '\n';
+  }
+
+  cfsetospeed(&tty, (speed_t)B9600);
+  cfsetispeed(&tty, (speed_t)B9600);
+
+  tty.c_cflag = CLOCAL | CREAD | CRTSCTS | CS8 | CSIZE | CSTOPB | PARENB;
+  tty.c_cc[VMIN] = 1;
+  tty.c_cc[VTIME] = 0;
+
+  cfmakeraw(&tty);
+
+  if (tcsetattr(fd, TCSANOW, &tty)) {
+     cout << "Error: " << strerror(errno) << '\n';
+  }
+
   sleep_for(seconds(2));
 
-  // Immediate values.
-  cout << call(handle, inc, 2) << '\n';
-  cout << call(handle, inc, 4) << '\n';
-  cout << call(handle, inc, 8) << '\n';
+  for (int i = 0; i < 10; i++) {
+    // Immediate values.
+    cout << call(fd, inc, (int16_t)2) << ' ';
+    cout << call(fd, inc, (int16_t)4) << ' ';
+    cout << call(fd, inc, (int16_t)8) << ' ';
 
-  // Variables.
-  int16_t a = 1;
-  cout << call(handle, inc, a) << '\n';
+    // Variables.
+    int16_t a = 1;
+    cout << call(fd, inc, a) << '\n';
 
-  // Void function.
-  call(handle, set_led, 63);
+    // Void function.
+    call(fd, set_led, (uint8_t)63);
+  }
+
+  close(fd);
 
   return 0;
 }
