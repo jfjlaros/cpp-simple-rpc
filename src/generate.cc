@@ -53,6 +53,10 @@ int main(void) {
 
   cout << "#ifndef MY_PROJECT_DEVICE_H_\n"
        << "#define MY_PROJECT_DEVICE_H_\n\n"
+       << "#include <tuple>\n"
+       << "#include <vector>\n\n"
+       << "using std::tuple;\n"
+       << "using std::vector;\n\n"
        << pointers << "\n"
        << "char const _rpcEndianness = '" << hardware[0] << "';\n"
        << "char const _rpcSizeT = '" << hardware[1] << "';\n"

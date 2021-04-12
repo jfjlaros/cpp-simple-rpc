@@ -69,7 +69,7 @@ string _rpcTypeOf(string const& s, bool cat) {
 
   switch (s[0]) {
     case '(':
-      return spacer + "object<" + _rpcTypeOf(s.substr(1, string::npos), false);
+      return spacer + "tuple<" + _rpcTypeOf(s.substr(1, string::npos), false);
     case '[':
       return spacer + "vector<" + _rpcTypeOf(s.substr(1, string::npos), false);
     case ')':
