@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "serial.h"
-#include "simpleRPC.h"
+#include <serial.h>
+#include <simpleRPC.h>
 
 #include "device.h"
 

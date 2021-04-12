@@ -49,4 +49,21 @@ void ioWrite(int fd, T const* data) {
   }
 }
 
+
+/*! \ingroup io
+ */
+template <class R>
+R ioGet(int fd) {
+  R data;
+  ioRead(fd, &data);
+  return data;
+}
+
+/*! \ingroup io
+ */
+template <class T>
+void ioPut(int fd, T const& data) {
+  ioWrite(fd, &data);
+}
+
 #endif

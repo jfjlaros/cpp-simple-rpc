@@ -1,28 +1,30 @@
-MAIN := test
-
+MAIN := generate.cc
+LIB := libsimpleRPC.a
+MODULES := serial types utils
 
 CC := g++
+AR := ar
+
+EXEC := $(basename $(MAIN))
+OBJS := $(addsuffix .o, $(MODULES))
+
+.PHONY: all clean distclean
 
 
-OBJS := serial.o
+all: $(EXEC)
 
-.PHONY: all distclean
+clean:
+	rm -f $(OBJS)
 
-
-all: $(MAIN)
-
-distclean:
-	rm -f $(MAIN)
+distclean: clean
+	rm -f $(EXEC) $(LIB)
 
 
-generate: generate.cc $(OBJS)
-	$(CC) -o $@ $< $(OBJS)
+$(EXEC): $(MAIN) $(LIB)
+	$(CC) -o $@ $^
 
-$(MAIN): $(MAIN).cc $(OBJS)
-	$(CC) -o $@ $< $(OBJS)
+$(LIB): $(OBJS)
+	$(AR) rcs $@ $^
 
 %.o: %.cc %.h
 	$(CC) -o $@ -c $<
-
-device.h: generate
-	./generate

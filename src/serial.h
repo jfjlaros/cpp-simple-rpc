@@ -4,7 +4,6 @@
 #include <termios.h>
 #include <unistd.h>
 
-
 int serialOpen(char const*, speed_t, uint8_t);
 
 #endif
