@@ -28,6 +28,7 @@ int serialOpen(char const* device, speed_t baudrate, uint8_t wait) {
   termios tty;
   if (tcgetattr(fd, &tty)) {
      cout << "Error: " << strerror(errno) << '\n';
+     return -1;
   }
 
   cfsetospeed(&tty, baudrate);
@@ -41,6 +42,7 @@ int serialOpen(char const* device, speed_t baudrate, uint8_t wait) {
 
   if (tcsetattr(fd, TCSANOW, &tty)) {
      cout << "Error: " << strerror(errno) << '\n';
+     return -1;
   }
 
   sleep_for(seconds(wait));

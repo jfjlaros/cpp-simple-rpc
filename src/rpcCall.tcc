@@ -19,7 +19,7 @@ extern void* _rpcMethod[];
  */
 template <class F>
 uint8_t _methodIndex(F& f) {
-  for (uint8_t i = 0x00; i < sizeof(_rpcMethod) / sizeof(void*); i++) {
+  for (uint8_t i = 0; i < sizeof(_rpcMethod) / sizeof(void*); i++) {
     if (&f == _rpcMethod[i]) {
       return i;
     }

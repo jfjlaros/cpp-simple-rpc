@@ -9,6 +9,6 @@ using std::vector;
 
 vector<string> split(string const&, string const&);
 string join(vector<string>&, string const&);
-string trim(string const&, string const&);
+string strip(string const&, string const&);
 
 #endif

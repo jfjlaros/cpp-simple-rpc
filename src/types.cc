@@ -3,8 +3,14 @@
 //! \defgroup types
 
 
-/*! \ingroup types
+/*!
+ * Basic type decoding.
+ *
  * See: https://docs.python.org/3/library/struct.html
+ *
+ * \param type Python-struct encoded type.
+ *
+ * \return C type name.
  */
 char const* _typeOf(uint8_t type) {
   switch (type) {
@@ -40,9 +46,15 @@ char const* _typeOf(uint8_t type) {
   return "void";
 }
 
-/*! \ingroup types
+/*!
+ * Type decoding.
+ *
+ * \param type Nested Python-struct encoded type.
+ * \param cat Concatenation enabled.
+ *
+ * \return C++ type name.
  */
-string rpcTypeOf(string s, bool cat) {
+string _rpcTypeOf(string const& s, bool cat) {
   if (!s.length()) {
     if (cat) {
       return "";
@@ -57,12 +69,23 @@ string rpcTypeOf(string s, bool cat) {
 
   switch (s[0]) {
     case '(':
-      return spacer + "object<" + rpcTypeOf(s.substr(1, string::npos), false);
+      return spacer + "object<" + _rpcTypeOf(s.substr(1, string::npos), false);
     case '[':
-      return spacer + "vector<" + rpcTypeOf(s.substr(1, string::npos), false);
+      return spacer + "vector<" + _rpcTypeOf(s.substr(1, string::npos), false);
     case ')':
     case ']':
-      return " >" + rpcTypeOf(s.substr(1, string::npos), cat);
+      return " >" + _rpcTypeOf(s.substr(1, string::npos), cat);
   }
-  return spacer + _typeOf(s[0]) + rpcTypeOf(s.substr(1, string::npos), true);
+  return spacer + _typeOf(s[0]) + _rpcTypeOf(s.substr(1, string::npos), true);
+}
+
+/*! \ingroup types
+ * Type decoding.
+ *
+ * \param type Nested Python-struct encoded type.
+ *
+ * \return C++ type name.
+ */
+string rpcTypeOf(string const& s) {
+  return _rpcTypeOf(s, false);
 }

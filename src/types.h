@@ -5,7 +5,6 @@
 
 using std::string;
 
-char const* _typeOf(uint8_t);
-string rpcTypeOf(string, bool);
+string rpcTypeOf(string const&);
 
 #endif

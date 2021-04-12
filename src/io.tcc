@@ -51,6 +51,11 @@ void ioWrite(int fd, T const* data) {
 
 
 /*! \ingroup io
+ * Convenience function for reading data.
+ *
+ * \param fd File descriptor.
+ *
+ * \return Data.
  */
 template <class R>
 R ioGet(int fd) {
@@ -60,6 +65,10 @@ R ioGet(int fd) {
 }
 
 /*! \ingroup io
+ * Convenience function for writing data.
+ *
+ * \param fd File descriptor.
+ * \param data Data.
  */
 template <class T>
 void ioPut(int fd, T const& data) {

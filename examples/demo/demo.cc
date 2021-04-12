@@ -13,9 +13,9 @@ int main(void) {
 
   for (int i = 0; i < 10; i++) {
     // Immediate values.
-    cout << call(fd, inc, 2) << ' ';
-    cout << call(fd, inc, 4) << ' ';
-    cout << call(fd, inc, 8) << ' ';
+    cout << call(fd, inc, 2) << ' '
+         << call(fd, inc, 4) << ' '
+         << call(fd, inc, 8) << ' ';
 
     // Variables.
     int16_t a = 1;

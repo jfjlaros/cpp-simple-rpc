@@ -41,20 +41,23 @@ int main(void) {
     vector<string> signature = split(v[0], ":");
     string name = split(v[1], ":")[0];
 
-    pointers += rpcTypeOf(signature[0], false) + " (*" + name + ")(";
+    pointers += rpcTypeOf(signature[0]) + " (*" + name + ")(";
     methods.push_back(name);
 
-    vector<string> parameters = split(trim(signature[1], " "), " ");
+    vector<string> parameters = split(strip(signature[1], " "), " ");
     for (size_t i = 0; i < parameters.size(); i++) {
-      pointers += rpcTypeOf(parameters[i], false);
+      pointers += rpcTypeOf(parameters[i]);
     }
     pointers += ");\n";
 
     line = ioGet<string>(fd);
   }
 
-  cout << pointers << '\n';
-  cout << "void* _rpcMethod[] = {\n  "  << join(methods, ",\n  ") << "};\n";
+  cout << "#ifndef MY_PROJECT_DEVICE_H_\n"
+       << "#define MY_PROJECT_DEVICE_H_\n\n"
+       << pointers << '\n'
+       << "void* _rpcMethod[] = {\n  "  << join(methods, ",\n  ") << "};\n\n"
+       << "#endif\n";
 
   close(fd);
 
