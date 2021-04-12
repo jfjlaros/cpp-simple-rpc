@@ -3,4 +3,6 @@
 
 #include "rpcCall.tcc"
 
+#include "serial.h"
+
 #endif

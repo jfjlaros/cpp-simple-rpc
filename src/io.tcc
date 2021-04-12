@@ -2,10 +2,15 @@
 #define CPP_SIMPLE_RPC_IO_TCC_
 
 #include <string>
+#include <tuple>
+#include <vector>
 
 #include <unistd.h>
 
 using std::string;
+using std::tuple;
+using std::vector;
+
 
 //! \defgroup io
 

@@ -1,11 +1,8 @@
 #ifndef MY_PROJECT_DEVICE_H_
 #define MY_PROJECT_DEVICE_H_
-
-#include <tuple>
-#include <vector>
-
-using std::tuple;
-using std::vector;
+/*
+ * To update your project, remove this file and run `make`.
+ */
 
 uint8_t (*ping)(uint8_t);
 int16_t (*inc)(int16_t);

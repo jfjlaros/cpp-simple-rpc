@@ -1,8 +1,6 @@
 #ifndef CPP_SIMPLE_RPC_RPCCALL_TCC_
 #define CPP_SIMPLE_RPC_RPCCALL_TCC_
 
-#include <stdint.h>
-
 #include "io.tcc"
 
 extern void* _rpcMethod[];

@@ -1,5 +1,4 @@
 #include <iostream>
-#include <vector>
 
 #include "serial.h"
 #include "simpleRPC.h"
@@ -52,11 +51,10 @@ int main(void) {
   }
 
   cout << "#ifndef MY_PROJECT_DEVICE_H_\n"
-       << "#define MY_PROJECT_DEVICE_H_\n\n"
-       << "#include <tuple>\n"
-       << "#include <vector>\n\n"
-       << "using std::tuple;\n"
-       << "using std::vector;\n\n"
+       << "#define MY_PROJECT_DEVICE_H_\n"
+       << "/*\n"
+       << " * To update your project, remove this file and run `make`.\n"
+       << " */\n\n"
        << pointers << "\n"
        << "char const _rpcEndianness = '" << hardware[0] << "';\n"
        << "char const _rpcSizeT = '" << hardware[1] << "';\n"
