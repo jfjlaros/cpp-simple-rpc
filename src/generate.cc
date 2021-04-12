@@ -23,15 +23,13 @@ int main(void) {
     cout << "Error: missing protocol header\n";
     return 1;
   }
-
   for (uint8_t i = 0; i < 3; i++) {
     if (ioGet<char>(fd) != _VERSION[i]) {  // TODO: Semantic versioning.
       cout << "Error: version mismatch\n";
       return 2;
     }
   }
-
-  cout << "// Hardware: " << ioGet<string>(fd) << '\n';
+  string hardware = ioGet<string>(fd);
 
   string pointers;
   vector<string> methods;
@@ -42,7 +40,7 @@ int main(void) {
     string name = split(v[1], ":")[0];
 
     pointers += rpcTypeOf(signature[0]) + " (*" + name + ")(";
-    methods.push_back(name);
+    methods.push_back('&' + name);
 
     vector<string> parameters = split(strip(signature[1], " "), " ");
     for (size_t i = 0; i < parameters.size(); i++) {
@@ -55,7 +53,9 @@ int main(void) {
 
   cout << "#ifndef MY_PROJECT_DEVICE_H_\n"
        << "#define MY_PROJECT_DEVICE_H_\n\n"
-       << pointers << '\n'
+       << pointers << "\n"
+       << "char const _rpcEndianness = '" << hardware[0] << "';\n"
+       << "char const _rpcSizeT = '" << hardware[1] << "';\n"
        << "void* _rpcMethod[] = {\n  "  << join(methods, ",\n  ") << "};\n\n"
        << "#endif\n";
 
