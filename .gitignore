@@ -1,0 +1,4 @@
+examples/demo/demo
+src/*.o
+src/generate
+src/libsimpleRPC.a
