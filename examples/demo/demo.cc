@@ -8,20 +8,20 @@ using std::cout;
 
 
 int main(void) {
-  int fd = serialOpen("/dev/ttyACM0", 9600, 2);
+  int fd = serialOpen(DEVICE, BAUDRATE, WAIT);
 
   for (int i = 0; i < 10; i++) {
     // Immediate values.
-    cout << call(fd, inc, 2) << ' '
-         << call(fd, inc, 4) << ' '
-         << call(fd, inc, 8) << ' ';
+    cout << call(fd, methods::inc, 2) << ' '
+         << call(fd, methods::inc, 4) << ' '
+         << call(fd, methods::inc, 8) << ' ';
 
     // Variables.
     int16_t a = 1;
-    cout << call(fd, inc, a) << '\n';
+    cout << call(fd, methods::inc, a) << '\n';
 
     // Void function.
-    call(fd, set_led, 63);
+    call(fd, methods::set_led, 63);
   }
 
   close(fd);

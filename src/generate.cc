@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include "serial.h"
 #include "simpleRPC.h"
 #include "types.h"
 #include "utils.h"
@@ -13,8 +12,13 @@
 using std::cout;
 
 
-int main(void) {
-  int fd = serialOpen("/dev/ttyACM0", 9600, 2);
+int main(int argc, char** argv) {
+  if (argc != 4) {
+    cout << "Usage: " << argv[0] << " device baudrate wait\n";
+    return 1;
+  }
+
+  int fd = serialOpen(argv[1], atoi(argv[2]), atoi(argv[3]));
 
   ioPut<char>(fd, _LIST_REQ);
 
@@ -30,7 +34,7 @@ int main(void) {
   }
   string hardware = ioGet<string>(fd);
 
-  string pointers;
+  vector<string> pointers;
   vector<string> methods;
   string line = ioGet<string>(fd);
   while (line.length()) {
@@ -38,14 +42,15 @@ int main(void) {
     vector<string> signature = split(v[0], ":");
     string name = split(v[1], ":")[0];
 
-    pointers += rpcTypeOf(signature[0]) + " (*" + name + ")(";
-    methods.push_back('&' + name);
+    string pointer = rpcTypeOf(signature[0]) + " (*" + name + ")(";
+    methods.push_back("&methods::" + name);
 
     vector<string> parameters = split(strip(signature[1], " "), " ");
     for (size_t i = 0; i < parameters.size(); i++) {
-      pointers += rpcTypeOf(parameters[i]);
+      pointer += rpcTypeOf(parameters[i]);
     }
-    pointers += ");\n";
+    pointer += ")";
+    pointers.push_back(pointer);
 
     line = ioGet<string>(fd);
   }
@@ -55,7 +60,12 @@ int main(void) {
        << "/*\n"
        << " * To update your project, remove this file and run `make`.\n"
        << " */\n\n"
-       << pointers << "\n"
+       << "#define DEVICE \"" << argv[1] << "\"\n"
+       << "#define BAUDRATE " << argv[2] << "\n"
+       << "#define WAIT " << argv[3] << "\n\n"
+       << "namespace methods {\n"
+       << "  " << join(pointers, ";\n  ") << ";\n"
+       << "}\n\n"
        << "char const _rpcEndianness = '" << hardware[0] << "';\n"
        << "char const _rpcSizeT = '" << hardware[1] << "';\n"
        << "void* _rpcMethod[] = {\n  "  << join(methods, ",\n  ") << "};\n\n"
