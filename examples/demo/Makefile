@@ -11,18 +11,24 @@ WAIT := 2
 CC := g++
 
 EXEC := $(basename $(MAIN))
+HEADER := device.h
 
-.PHONY: all distclean
+.PHONY: all distclean headclean header
 
 
 all: $(EXEC)
 
-distclean:
+distclean: headclean
 	rm -f $(EXEC)
 
+headclean:
+	rm -f $(HEADER)
 
-$(EXEC): $(MAIN) device.h
+header: headclean
+
+
+$(EXEC): $(MAIN) $(HEADER)
 	$(CC) -o $@ $< -I$(IPATH) -L$(LPATH) -l$(LIB)
 
-device.h:
-	$(BPATH)/generate $(DEVICE) $(BAUDRATE) $(WAIT) > $@
+$(HEADER) header:
+	$(BPATH)/generate $(DEVICE) $(BAUDRATE) $(WAIT) > $(HEADER)
