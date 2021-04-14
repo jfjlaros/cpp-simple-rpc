@@ -11,12 +11,12 @@
  *
  * \return Vector of substrings.
  */
-vector<string> split(string const& s, string const& sep) {
+vector<string> split(string const& s, string const& sep, size_t max) {
   vector<string> v;
   size_t start = 0;
   size_t end = s.find(sep);
 
-  while (end != string::npos) {
+  for (size_t i = 0; i < max && end != string::npos; i++) {
     v.push_back(s.substr(start, end - start));
     start = end + sep.length();
     end = s.find(sep, start);
