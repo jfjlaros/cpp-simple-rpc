@@ -38,10 +38,10 @@ using std::unordered_map;
  *      p | char[]             | bytes             |
  *      P | void *             | integer           |
  */
-unordered_map<char, int> _rpcTypeSize = {
-  {'c', 1}, {'b', 1}, {'B', 1}, {'?', 1}, {'h', 2}, {'H', 2}, {'i', 4},
-  {'I', 4}, {'l', 4}, {'L', 4}, {'q', 8}, {'Q', 8}, {'e', 2}, {'f', 4},
-  {'d', 8}};
+//unordered_map<char, int> _rpcTypeSize = {
+//  {'c', 1}, {'b', 1}, {'B', 1}, {'?', 1}, {'h', 2}, {'H', 2}, {'i', 4},
+//  {'I', 4}, {'l', 4}, {'L', 4}, {'q', 8}, {'Q', 8}, {'e', 2}, {'f', 4},
+//  {'d', 8}};
 
 
 //! \defgroup io
@@ -86,12 +86,12 @@ void ioWrite(int fd, T const* data) {
   }
 }
 
-template <class T>
-void ioWrite(int fd, T* data, char type) {
-  for (uint8_t i = 0; i < _rpcTypeSize[type]; i++) {
-    write(fd, &((uint8_t*)data)[i], 1);
-  }
-}
+//template <class T>
+//void ioWrite(int fd, T* data, char type) {
+//  for (uint8_t i = 0; i < _rpcTypeSize[type]; i++) {
+//    write(fd, &((uint8_t*)data)[i], 1);
+//  }
+//}
 
 
 /*! \ingroup io
