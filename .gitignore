@@ -1,4 +1,4 @@
-examples/demo/demo
+examples/*/demo
 src/*.o
 src/generate
 src/libsimpleRPC.a

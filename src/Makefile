@@ -1,6 +1,6 @@
 MAIN := generate.cc
 LIB := libsimpleRPC.a
-MODULES := serial types utils
+MODULES := serial types utils dynamic
 
 CC := g++
 AR := ar
