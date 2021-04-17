@@ -1,8 +1,7 @@
 #include <cstring>
 #include <iostream>
 
-#include <serial.h>
-#include "dynamic.tcc"
+#include <simpleRPC.h>
 
 using std::cout;
 

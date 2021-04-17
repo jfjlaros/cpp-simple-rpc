@@ -1,6 +1,5 @@
-MAIN := generate.cc
 LIB := libsimpleRPC.a
-MODULES := serial types utils dynamic
+MODULES := interface serial types utils
 
 CC := g++
 AR := ar
@@ -11,17 +10,14 @@ OBJS := $(addsuffix .o, $(MODULES))
 .PHONY: all clean distclean
 
 
-all: $(EXEC)
+all: $(LIB)
 
 clean:
 	rm -f $(OBJS)
 
 distclean: clean
-	rm -f $(EXEC) $(LIB)
+	rm -f $(LIB)
 
-
-$(EXEC): $(MAIN) $(LIB)
-	$(CC) -o $@ $^
 
 $(LIB): $(OBJS)
 	$(AR) rcs $@ $^

@@ -1,5 +1,5 @@
-#ifndef CPP_SIMPLE_RPC_DYNAMIC_TCC_
-#define CPP_SIMPLE_RPC_DYNAMIC_TCC_
+#ifndef CPP_SIMPLE_RPC_INTERFACE_TCC_
+#define CPP_SIMPLE_RPC_INTERFACE_TCC_
 
 #include <string>
 #include <tuple>

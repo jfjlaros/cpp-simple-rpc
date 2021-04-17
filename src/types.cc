@@ -1,91 +1,91 @@
+#include <unordered_map>
+
 #include "types.h"
+
+using std::unordered_map;
 
 //! \defgroup types
 
+unordered_map<char, char const*> _type = {
+  {'?', "bool"}, {'c', "char"}, {'b', "int8_t"}, {'B', "uint8_t"},
+  {'h', "int16_t"}, {'H', "uint16_t"}, {'i', "int32_t"}, {'I', "uint32_t"},
+  {'l', "int32_t"}, {'L', "uint32_t"}, {'q', "int64_t"}, {'Q', "uint64_t"},
+  {'f', "float"}, {'d', "double"}};
 
-/*!
- * Basic type decoding.
+
+/*! \ingroup types
+ * Type encoding.
  *
- * See: https://docs.python.org/3/library/struct.html
+ * \param - Value.
  *
- * \param type Python-struct encoded type.
- *
- * \return C type name.
+ * \return Python-struct encoded type.
  */
-char const* _typeOf(uint8_t type) {
-  switch (type) {
-    case '?':
-      return "bool";
-    case 'c':
-      return "char";
-    case 'b':
-      return "int8_t";
-    case 'B':
-      return "uint8_t";
-    case 'h':
-      return "int16_t";
-    case 'H':
-      return "uint16_t";
-    case 'i':
-      return "int32_t";
-    case 'I':
-      return "uint32_t";
-    case 'l':
-      return "int32_t";
-    case 'L':
-      return "uint32_t";
-    case 'q':
-      return "int64_t";
-    case 'Q':
-      return "uint64_t";
-    case 'f':
-      return "float";
-    case 'd':
-      return "double";
-  }
-  return "void";
-}
-
-/*!
- * Type decoding.
- *
- * \param type Nested Python-struct encoded type.
- * \param cat Concatenation enabled.
- *
- * \return C++ type name.
- */
-string _rpcTypeOf(string const& s, bool cat) {
-  if (!s.length()) {
-    if (cat) {
-      return "";
-    }
-    return "void";
-  }
-
-  string spacer;
-  if (cat) {
-    spacer += ", ";
-  }
-
-  switch (s[0]) {
-    case '(':
-      return spacer + "tuple<" + _rpcTypeOf(s.substr(1, string::npos), false);
-    case '[':
-      return spacer + "vector<" + _rpcTypeOf(s.substr(1, string::npos), false);
-    case ')':
-    case ']':
-      return " >" + _rpcTypeOf(s.substr(1, string::npos), cat);
-  }
-  return spacer + _typeOf(s[0]) + _rpcTypeOf(s.substr(1, string::npos), true);
+uint8_t rpcTypeOf(bool) {
+  return '?';
 }
 
 /*! \ingroup types
- * Type decoding.
- *
- * \param type Nested Python-struct encoded type.
- *
- * \return C++ type name.
- */
-string rpcTypeOf(string const& s) {
-  return _rpcTypeOf(s, false);
+ * \copydoc rpcTypeOf(bool) */
+uint8_t rpcTypeOf(char) {
+  return 'c';
+}
+
+/*! \ingroup types
+ * \copydoc rpcTypeOf(bool) */
+uint8_t rpcTypeOf(int8_t) {
+  return 'b';
+}
+
+/*! \ingroup types
+ * \copydoc rpcTypeOf(bool) */
+uint8_t rpcTypeOf(uint8_t) {
+  return 'B';
+}
+
+/*! \ingroup types
+ * \copydoc rpcTypeOf(bool) */
+uint8_t rpcTypeOf(int16_t) {
+  return 'h';
+}
+
+/*! \ingroup types
+ * \copydoc rpcTypeOf(bool) */
+uint8_t rpcTypeOf(uint16_t) {
+  return 'H';
+}
+
+/*! \ingroup types
+ * \copydoc rpcTypeOf(bool) */
+uint8_t rpcTypeOf(int32_t) {
+  return 'l';
+}
+
+/*! \ingroup types
+ * \copydoc rpcTypeOf(bool) */
+uint8_t rpcTypeOf(uint32_t) {
+  return 'L';
+}
+
+/*! \ingroup types
+ * \copydoc rpcTypeOf(bool) */
+uint8_t rpcTypeOf(int64_t) {
+  return 'q';
+}
+
+/*! \ingroup types
+ * \copydoc rpcTypeOf(bool) */
+uint8_t rpcTypeOf(uint64_t) {
+  return 'Q';
+}
+
+/*! \ingroup types
+ * \copydoc rpcTypeOf(bool) */
+uint8_t rpcTypeOf(float) {
+  return 'f';
+}
+
+/*! \ingroup types
+ * \copydoc rpcTypeOf(bool) */
+uint8_t rpcTypeOf(double) {
+  return 'd';
 }
