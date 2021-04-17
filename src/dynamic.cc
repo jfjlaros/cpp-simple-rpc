@@ -13,13 +13,15 @@ unordered_map<char, int> _rpcTypeSize = {
 
 
 /*!
+ * Create a simpleRPC interface.
+ *
+ * \param fd File descriptor.
  */
 Interface::Interface(int fd) {
   open(fd);
 }
 
-/*!
- */
+//! Destructor.
 Interface::~Interface(void) {
   close();
 }
@@ -36,6 +38,13 @@ void Interface::read(string* data) {
 }
 
 /*!
+ * Initialise the interface.
+ *
+ * When the initialisation fails, `errno` is set to either:
+ * - 71 (Protocol error) when the Arduino response is malformed.
+ * - 93 (Protocol not supported) when a version mismatch has occurred.
+ *
+ * \param fd File descriptor.
  */
 void Interface::open(int fd) {
   _fd = fd;
@@ -75,6 +84,7 @@ void Interface::open(int fd) {
 }
 
 /*!
+ * Deconfigure the interface.
  */
 void Interface::close(void) {
   ::close(_fd);

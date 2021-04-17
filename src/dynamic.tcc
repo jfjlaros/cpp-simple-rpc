@@ -8,6 +8,8 @@
 
 #include <unistd.h>
 
+#include "types.h"
+
 using std::get;
 using std::string;
 using std::tuple;
@@ -29,6 +31,8 @@ class Interface {
     void close(void);
     template <class T>
       void read(T*);
+    template <class T>
+      void read(T*, char);
     void read(string*);
     template <class T>
       void write(T*);
@@ -57,6 +61,9 @@ class Interface {
 
 
 /*!
+ * Read a value from a file descriptor.
+ *
+ * \param data Data.
  */
 template <class T>
 void Interface::read(T* data) {
@@ -66,6 +73,28 @@ void Interface::read(T* data) {
 }
 
 /*!
+ * Read a value from a file descriptor and perform type checking.
+ *
+ * When the type check fails, `errno` is set to 52 (Invalid exchange).
+ *
+ * \param data Data.
+ * \param type Data type.
+ */
+template <class T>
+void Interface::read(T* data, char type) {
+  errno = 0;
+  if (rpcTypeOf(*data) != type) {
+    errno = 52;
+  }
+  for (uint8_t i = 0; i < _rpcTypeSize[type]; i++) {
+    ::read(_fd, &((uint8_t*)data)[i], 1);
+  }
+}
+
+/*!
+ * Write a value to a file descriptor.
+ *
+ * \param data Data.
  */
 template <class T>
 void Interface::write(T* data) {
@@ -75,15 +104,27 @@ void Interface::write(T* data) {
 }
 
 /*!
+ * Write a value to a file descriptor and perform type checking.
+ *
+ * When the type check fails, `errno` is set to 52 (Invalid exchange).
+ *
+ * \param data Data.
  */
 template <class T>
 void Interface::write(T* data, char type) {
+  errno = 0;
+  if (rpcTypeOf(*data) != type) {
+    errno = 52;
+  }
   for (uint8_t i = 0; i < _rpcTypeSize[type]; i++) {
     ::write(_fd, &((uint8_t*)data)[i], 1);
   }
 }
 
 /*!
+ * Read a value from a file descriptor (convenience function).
+ *
+ * \return Data.
  */
 template <class R>
 R Interface::get(void) {
@@ -93,12 +134,22 @@ R Interface::get(void) {
 }
 
 /*!
+ * Write a value to a file descriptor (convenience function).
+ *
+ * \param data Data.
  */
 template <class T>
 void Interface::put(T const& data) {
   write(&data);
 }
 
+/*!
+ * Write parameter values.
+ *
+ * \param sig Function parameters signature.
+ * \param val Current parameter value.
+ * \param args Remaining parameter values.
+ */
 template <class T, class... Args>
 void Interface::_call(vector<string> sig, T const& val, Args const&... args) {
   write(&val, sig.front()[0]);
@@ -107,22 +158,37 @@ void Interface::_call(vector<string> sig, T const& val, Args const&... args) {
 }
 
 /*!
+ * Do an RPC call that does not return a value.
+ *
+ * \param cmd RPC method name.
+ * \param args RPC method parameter values.
  */
 template <class... Args>
 void Interface::call(char const* cmd, Args... args) {
-  write(&::get<0>(_map[cmd]), 'B');
+  write(&::get<0>(_map[cmd]));
   _call(::get<2>(_map[cmd]), args...);
 }
 
 /*!
+ * Do an RPC call that returns a value.
+ *
+ * \param data Return value of the RPC call.
+ * \param cmd RPC method name.
+ * \param args RPC method parameter values.
  */
 template <class R, class... Args>
 void Interface::call(R& data, char const* cmd, Args... args) {
   call(cmd, args...);
-  read(&data);
+  read(&data, ::get<1>(_map[cmd])[0]);
 }
 
 /*!
+ * Do an RPC call that returns a value.
+ *
+ * \param cmd RPC method name.
+ * \param args RPC method parameter values.
+ *
+ * \return Return value of the RPC call.
  */
 template <class R, class... Args>
 R Interface::call(char const* cmd, Args... args) {
