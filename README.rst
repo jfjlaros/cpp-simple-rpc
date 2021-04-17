@@ -10,7 +10,6 @@ library.
 
 - User friendly API library.
 - Function signatures are defined on the Arduino.
-- RPC methods are *type safe*.
 
 Please see ReadTheDocs_ for the latest documentation.
 
@@ -29,8 +28,7 @@ Fetch the source and compile the library.
     cd cpp-simple-rpc/src
     make
 
-This will create the library (``libsimpleRPC.a``) and a command line utility
-(``generate``) which is needed to generate a header file for your project.
+This will create the library ``libsimpleRPC.a``.
 
 Usage
 ^^^^^
@@ -40,19 +38,6 @@ work when the Arduino device name is ``/dev/ttyACM0`` and the simpleRPC demo_
 project is loaded.
 
 To modify this example:
-
-- Edit ``Makefile``, change ``DEVICE``, ``BAUDRATE`` and ``WAIT`` to match your
-  configuration.
-- Connect the Arduino and recreate ``device.h``.
-
-::
-
-    make header
-
-The file ``device.h``, should now contain your local configuration and all
-function signatures of the exported RPC methods.
-
-You can now modify the client code:
 
 - Edit ``demo.cc``, replace all ``call`` invocations by ones that match your
   project.
