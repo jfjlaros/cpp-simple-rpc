@@ -10,6 +10,12 @@
 
 #include "types.h"
 
+#define STATUS_INITIALISED 0x01
+#define STATUS_PROTOCOL_ERROR 0x02
+#define STATUS_PROTOCOL_VERSION_ERROR 0x04
+#define STATUS_PARAM_TYPE_WARNING 0x08
+#define STATUS_RETURN_TYPE_WARNING 0x10
+
 using std::get;
 using std::string;
 using std::tuple;
@@ -48,7 +54,7 @@ class Interface {
       R call(char const*, Args...);
     template <class... Args>
       void call(char const*, Args...);
-    bool ready = false;  //!< Initialisation status.
+    uint8_t status = 0x00;  //!< Initialisation and error status.
   private:
     inline void _call(vector<string>) {}
     template <class T, class... Args>
@@ -75,16 +81,16 @@ void Interface::read(T* data) {
 /*!
  * Read a value from a file descriptor and perform type checking.
  *
- * When the type check fails, `errno` is set to 52 (Invalid exchange).
+ * When the type check fails, `status` flag `STATUS_RETURN_TYPE_WARNING` is
+ * updated.
  *
  * \param data Data.
  * \param type Data type.
  */
 template <class T>
 void Interface::read(T* data, char type) {
-  errno = 0;
   if (rpcTypeOf(*data) != type) {
-    errno = 52;
+    status |= STATUS_RETURN_TYPE_WARNING;
   }
   for (uint8_t i = 0; i < _rpcTypeSize[type]; i++) {
     ::read(_fd, &((uint8_t*)data)[i], 1);
@@ -106,15 +112,15 @@ void Interface::write(T* data) {
 /*!
  * Write a value to a file descriptor and perform type checking.
  *
- * When the type check fails, `errno` is set to 52 (Invalid exchange).
+ * When the type check fails, `status` flag `STATUS_PARAM_TYPE_WARNING` is
+ * updated.
  *
  * \param data Data.
  */
 template <class T>
 void Interface::write(T* data, char type) {
-  errno = 0;
   if (rpcTypeOf(*data) != type) {
-    errno = 52;
+    status |= STATUS_PARAM_TYPE_WARNING;
   }
   for (uint8_t i = 0; i < _rpcTypeSize[type]; i++) {
     ::write(_fd, &((uint8_t*)data)[i], 1);
@@ -160,11 +166,15 @@ void Interface::_call(vector<string> sig, T const& val, Args const&... args) {
 /*!
  * Do an RPC call that does not return a value.
  *
+ * The `status` flag `STATUS_PARAM_TYPE_WARNING` is cleared before the call is
+ * executed.
+ *
  * \param cmd RPC method name.
  * \param args RPC method parameter values.
  */
 template <class... Args>
 void Interface::call(char const* cmd, Args... args) {
+  status &= ~STATUS_PARAM_TYPE_WARNING;
   write(&::get<0>(_map[cmd]));
   _call(::get<2>(_map[cmd]), args...);
 }
@@ -172,12 +182,16 @@ void Interface::call(char const* cmd, Args... args) {
 /*!
  * Do an RPC call that returns a value.
  *
+ * The `status` flag `STATUS_RETURN_TYPE_WARNING` is cleared before the call is
+ * executed.
+ *
  * \param data Return value of the RPC call.
  * \param cmd RPC method name.
  * \param args RPC method parameter values.
  */
 template <class R, class... Args>
 void Interface::call(R& data, char const* cmd, Args... args) {
+  status &= ~STATUS_RETURN_TYPE_WARNING;
   call(cmd, args...);
   read(&data, ::get<1>(_map[cmd])[0]);
 }

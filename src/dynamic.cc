@@ -27,22 +27,11 @@ Interface::~Interface(void) {
 }
 
 /*!
- */
-void Interface::read(string* data) {
-  uint8_t c;
-  read(&c);
-  while (c) {
-    *data += c;
-    read(&c);
-  }
-}
-
-/*!
  * Initialise the interface.
  *
- * When the initialisation fails, `errno` is set to either:
- * - 71 (Protocol error) when the Arduino response is malformed.
- * - 93 (Protocol not supported) when a version mismatch has occurred.
+ * When the initialisation fails, the following `status` flags may be updated:
+ * - `STATUS_PROTOCOL_ERROR` when the Arduino response is malformed.
+ * - `STATUS_PROTOCOL_VERSION_ERROR` when a version mismatch has occurred.
  *
  * \param fd File descriptor.
  */
@@ -51,14 +40,15 @@ void Interface::open(int fd) {
 
   put<char>(_LIST_REQ);
 
+  status &= ~(STATUS_PROTOCOL_ERROR | STATUS_PROTOCOL_VERSION_ERROR);
   if (get<string>() != _PROTOCOL) {
-    errno = 71;  // Protocol error.
+    status |= STATUS_PROTOCOL_ERROR;
     return;
   }
   for (uint8_t i = 0; i < 3; i++) {
     // TODO: Semantic versioning.
     if (get<char>() != _VERSION[i]) {
-      errno = 93;  // Protocol not supported.
+      status |= STATUS_PROTOCOL_VERSION_ERROR;
       return;
     }
   }
@@ -80,7 +70,7 @@ void Interface::open(int fd) {
     line = get<string>();
     index++;
   }
-  ready = true;
+  status |= STATUS_INITIALISED;
 }
 
 /*!
@@ -88,5 +78,16 @@ void Interface::open(int fd) {
  */
 void Interface::close(void) {
   ::close(_fd);
-  ready = false;
+  status &= ~STATUS_INITIALISED;
+}
+
+/*!
+ */
+void Interface::read(string* data) {
+  uint8_t c;
+  read(&c);
+  while (c) {
+    *data += c;
+    read(&c);
+  }
 }
